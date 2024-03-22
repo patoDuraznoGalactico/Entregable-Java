@@ -5,7 +5,6 @@ import database.ConfigDB;
 import entity.Autor;
 
 import javax.swing.*;
-import javax.xml.namespace.QName;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +82,38 @@ public class AutorModel implements CRUD {
         return listAutor;
     }
 
+    public Autor findById(int id){
+        // 1. Conexionarse :)
+        Connection objConnection = ConfigDB.openConnection();
+
+        // 2. Crear el Autor a retornar
+        Autor objAutor = null;
+        try {
+            // 3. sql
+            String sql = "SELECT * FROM autores WHERE id = ?;";
+
+            //4. preparamos el statement
+            PreparedStatement objPrepare = objConnection.prepareStatement(sql);
+            //5. dar valor a el ?
+            objPrepare.setInt(1,id);
+
+            //6. ejecutar el query
+            ResultSet objResult = objPrepare.executeQuery();
+            if(objResult.next()){
+                objAutor = new Autor();
+                objAutor.setId(objResult.getInt("id"));
+                objAutor.setNombre(objResult.getString("nombre"));
+                objAutor.setNacionalidad(objResult.getString("nacionalidad"));
+            }
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+        ConfigDB.closeConnection();
+        return objAutor;
+    }
     @Override
     public boolean update(Object obj) {
         return false;
